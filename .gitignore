@@ -1,3 +1,4 @@
 __pycache__
 .env
 bot_personas/*.txt
+output.txt

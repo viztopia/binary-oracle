@@ -46,11 +46,11 @@ model = genai.GenerativeModel(model_name="gemini-1.0-pro",
                               safety_settings=safety_settings)
 
 # Read prompt parts from input.txt using the get_prompt_parts function
-file_path = "./bot_personas/input.txt"
+file_path = "./bot_personas/boracle_bot3.txt"
 prompt_parts = get_prompts_gemini(file_path)
 
 # Ask a question
-question = "What does a more equitable system than capitalism look like?"
+question = "What mask must I discard in order to see my true reflection?"
 question = "user: " + question
 
 # append the question to the prompt parts
@@ -68,5 +68,5 @@ print(response.text)
 prompt_and_response = "\n".join(prompt_parts) + response.text
 
 # save the prompt plus the response to a file
-with open("output.txt", "w") as f:
-  f.write(prompt_and_response)
+# with open("output.txt", "w") as f:
+#   f.write(prompt_and_response)
