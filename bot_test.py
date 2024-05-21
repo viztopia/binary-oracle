@@ -9,8 +9,7 @@ url = "https://binaryoracle.dftp.live/ask_bot"
 
 # Define the parameters to send to the endpoint
 data = {
-    # "platform": "OPENAI", # or "GEMINI"
-    "platform" : "GEMINI",
+    "platform" : "GEMINI", # or OPENAI
     "target_chatbot": "BOT_1", # BOT_1 or BOT_2 or BOT_3
     "user_question": "What are you?"
 }
