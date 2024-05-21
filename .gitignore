@@ -3,3 +3,4 @@ __pycache__
 bot_personas/*.txt
 output.txt
 2024_april/
+dev_tests/
