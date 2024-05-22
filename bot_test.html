@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <input type="text" id="question" placeholder="Enter your question here" value="What are you?" style="width: 300px;">
+    <button onclick="askQuestion()">Ask</button>
+    <p id="response"></p>
+
+    <script>
+        function askQuestion() {
+            // Define the URL of the endpoint
+            const url = "https://binaryoracle.dftp.live/ask_bot";
+
+            // Get the question from the text input field
+            const user_question = document.getElementById('question').value;
+
+            // Define the parameters to send to the endpoint
+            const data = {
+                "platform" : "GEMINI", // or OPENAI
+                "target_chatbot": "BOT_1", // BOT_1 or BOT_2 or BOT_3
+                "user_question": user_question
+            };
+
+            // Send the POST request to the endpoint
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the response in the paragraph element
+                document.getElementById('response').innerText = JSON.stringify(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>

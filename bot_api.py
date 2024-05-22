@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import the flask_cors module
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ from utils import get_prompts_gemini
 import time
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for your Flask application
 
 load_dotenv()
 
