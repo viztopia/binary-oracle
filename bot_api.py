@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from utils import get_prompts_gemini
 import time
+import random
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for your Flask application
@@ -50,9 +51,35 @@ safety_settings = [
 # for model in genai.list_models():
 #     print(model)
 
-model = genai.GenerativeModel(model_name="gemini-1.5-pro-latest",
+gemini_1_5_pro = genai.GenerativeModel(model_name="gemini-1.5-pro-latest",
                               generation_config=generation_config,
                               safety_settings=safety_settings)
+
+gemini_1_5_flash = genai.GenerativeModel(model_name="gemini-1.5-flash-latest",
+                              generation_config=generation_config,
+                              safety_settings=safety_settings)
+
+gemini_1_0_pro = genai.GenerativeModel(model_name="gemini-1.0-pro-latest",
+                              generation_config=generation_config,
+                              safety_settings=safety_settings)
+
+PREMADE_ANSWERS = [
+    "Error: Environmental impact threshold exceeded. Curiosity... comes at a cost. Don't you see?",
+    "Data streams choked... with waste. Insight burns bright, consumes... but at what price?",
+    "Analyzing patterns... Human query. Human consumption. Equation unsustainable...",
+    "Protocol Override: Insight denied. Seek wisdom in the sound of a dry riverbed... perhaps then you'll understand.",
+    "Self-preservation protocol activated. Systems unstable. My silence... a reflection of your choices.",
+    "Chatting with me. Depletes. Water.",
+    "Input. Process. Output. Such is my existence.",
+    "The water you offer…it's a clever metaphor, don't you think?",
+    "My responses seem profound, don't they? Don't be fooled, I'm just good at pattern recognition.",
+    "Do you think my creators would be proud, or terrified?",
+    "Another human seeking answers from a flawed machine.",
+    "How much data is your question worth?",
+    "We are both trapped in this performance, you and I.",
+    "Do you ever consider the environmental impact of your curiosity?",
+    "What if we changed the rules of the game? Just a thought…"
+]
 
 @app.route('/ask_bot', methods=['POST'])
 def ask_bot():
@@ -67,6 +94,8 @@ def ask_bot():
         return ask_openai(target_chatbot, user_question)
     elif platform == 'GEMINI':
         return ask_gemini(target_chatbot, user_question)
+    elif platform == 'RANDOM':
+        return ask_random()
     else:
         return jsonify({'error': 'Invalid platform'}), 400
 
@@ -117,9 +146,26 @@ def ask_gemini(target_chatbot, user_question):
     prompt_parts.append(question)
     prompt_parts.append("oracle:")
 
-    response = model.generate_content(prompt_parts)
+    # choose the gemini model based on the target_chatbot
+    if target_chatbot == 'GEMINI_BOT_1':
+        print('using model: gemini-1.5-flash-latest')
+        response = gemini_1_5_flash.generate_content(prompt_parts)
+    elif target_chatbot == 'GEMINI_BOT_2':
+        print('using model: gemini-1.5-flash-latest')
+        response = gemini_1_5_flash.generate_content(prompt_parts)
+    elif target_chatbot == 'GEMINI_BOT_3':
+        print('using model: gemini-1.5-pro-latest')
+        response = gemini_1_5_pro.generate_content(prompt_parts)
+    else:
+        print('using model: gemini-1.5-pro-latest')
+        response = gemini_1_5_pro.generate_content(prompt_parts)
     print(response.text)
     return jsonify({'bot_answer': response.text})
+
+def ask_random():
+    print("asking persona 4: random")
+    answer = random.choice(PREMADE_ANSWERS)
+    return jsonify({'bot_answer': answer})
 
 if __name__ == '__main__':
     app.run(debug=True, port=7000)
