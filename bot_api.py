@@ -13,6 +13,8 @@ CORS(app)  # Enable CORS for your Flask application
 
 load_dotenv()
 
+debug_bots = False
+
 # OpenAI Configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -51,15 +53,15 @@ safety_settings = [
 # for model in genai.list_models():
 #     print(model)
 
-gemini_1_5_pro = genai.GenerativeModel(model_name="gemini-1.5-pro-latest",
+gemini_1_5_pro = genai.GenerativeModel(model_name="gemini-1.5-pro-001",
                               generation_config=generation_config,
                               safety_settings=safety_settings)
 
-gemini_1_5_flash = genai.GenerativeModel(model_name="gemini-1.5-flash-latest",
+gemini_1_5_flash = genai.GenerativeModel(model_name="gemini-1.5-flash-001",
                               generation_config=generation_config,
                               safety_settings=safety_settings)
 
-gemini_1_0_pro = genai.GenerativeModel(model_name="gemini-1.0-pro-latest",
+gemini_1_0_pro = genai.GenerativeModel(model_name="gemini-1.0-pro-001",
                               generation_config=generation_config,
                               safety_settings=safety_settings)
 
@@ -93,7 +95,7 @@ def ask_bot():
     if platform == 'OPENAI':
         return ask_openai(target_chatbot, user_question)
     elif platform == 'GEMINI':
-        return ask_gemini(target_chatbot, user_question)
+        return ask_gemini(target_chatbot, user_question, debug=debug_bots)
     elif platform == 'RANDOM':
         return ask_random()
     else:
@@ -137,7 +139,7 @@ def ask_openai(target_chatbot, user_question):
 
     return jsonify({'bot_answer': assistant_answer})
 
-def ask_gemini(target_chatbot, user_question):
+def ask_gemini(target_chatbot, user_question, debug=False):
     print(target_chatbot, user_question)
 
     file_path = f"./bot_personas/{target_chatbot.lower()}.txt"
@@ -145,19 +147,24 @@ def ask_gemini(target_chatbot, user_question):
     question = "user: " + user_question
     prompt_parts.append(question)
     prompt_parts.append("oracle:")
+    if debug:
+        print(prompt_parts)
+        return jsonify({'bot_answer': 'This bot is under development. Please try again later.'})
 
     # choose the gemini model based on the target_chatbot
     if target_chatbot == 'GEMINI_BOT_1':
-        print('using model: gemini-1.5-flash-latest')
+        print('using model: gemini-1.5-flash-001')
         response = gemini_1_5_flash.generate_content(prompt_parts)
     elif target_chatbot == 'GEMINI_BOT_2':
-        print('using model: gemini-1.5-flash-latest')
-        response = gemini_1_5_flash.generate_content(prompt_parts)
+        # print('using model: gemini-1.5-flash-001')
+        # response = gemini_1_5_flash.generate_content(prompt_parts)
+        print('using model: gemini-1.5-pro-001')
+        response = gemini_1_5_pro.generate_content(prompt_parts)
     elif target_chatbot == 'GEMINI_BOT_3':
-        print('using model: gemini-1.5-pro-latest')
+        print('using model: gemini-1.5-pro-001')
         response = gemini_1_5_pro.generate_content(prompt_parts)
     else:
-        print('using model: gemini-1.5-pro-latest')
+        print('using model: gemini-1.5-pro-001')
         response = gemini_1_5_pro.generate_content(prompt_parts)
     print(response.text)
     return jsonify({'bot_answer': response.text})

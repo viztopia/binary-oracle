@@ -1,6 +1,6 @@
 __pycache__
 .env
-bot_personas/*.txt
+bot_personas/*
 output.txt
 version_bk/
 dev_tests/

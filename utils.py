@@ -2,7 +2,8 @@ import re
 
 def get_prompts_gemini(file_path):
     # Define the separator pattern
-    separator_pattern = r'(\r?\n)+[\r\n\s]*'
+    # separator_pattern = r'(\r?\n)+[\r\n\s]*'
+    separator_pattern = r'(\r?\n){2}[\s]*'
 
     # Open the file and read its contents
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -10,6 +11,10 @@ def get_prompts_gemini(file_path):
 
     # Split the content based on the specified separator pattern
     sections = re.split(separator_pattern, contents.strip())
+
+    # loop through the sections and print them all for debugging
+    # for section in sections:
+    #     print(sections.index(section), section)
 
     # Initialize the list with the first section, correctly identifying it as instructions for the oracle
     prompt_parts = [sections[2].strip()]  # Assuming sections[2] contains the instruction.
@@ -20,10 +25,14 @@ def get_prompts_gemini(file_path):
     # Remove all sections with empty spaces or those with content "Example: "
     sections = [section for section in sections if section.strip() and not section.lower().startswith("examples:")]
 
-    # Iterate over the remaining sections, adding "user: " before the odd-indexed ones and "oracle: " before the even-indexed ones
     for i, section in enumerate(sections):
-        prefix = "user: " if i % 2 == 0 else "oracle: "
-        prompt_parts.append(f"{prefix}{section.strip()}")
+        parts = section.split('\n', 1)  # Split the section into two parts by the first newline
+        if len(parts) == 2:  # If there are two parts
+            prompt_parts.append(f"user: {parts[0].strip()}")  # Prefix the first part with "user: "
+            prompt_parts.append(f"oracle: {parts[1].strip()}")  # Prefix the second part with "oracle: "
+        else:  # If there's only one part
+            prefix = "user: " if i % 2 == 0 else "oracle: "
+            prompt_parts.append(f"{prefix}{parts[0].strip()}")
 
     # Return the prompt_parts list
     return prompt_parts
